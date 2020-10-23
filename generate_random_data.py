@@ -18,27 +18,56 @@ class GeneratorManager(object):
 		self.nb_columns =nb_columns 
 		self.nb_lines = nb_lines 
 		self.pp = pp
- 
-	def generate_data(self):
+
+
+	def generate_data(self,output_type ,mixed_data , ppd = None):
+# mixed_data c coutinous, b binary, m = mixed
+
 		df = {}
 		for i in range(self.nb_columns):
 			name ='col_' + str(i)
 			if i == self.nb_columns-1:
 				name = 'output'
 
-			if i%2 == 0:
-				df[name] = [np.random.random()for j in range(self.nb_lines)]
-			
-			else:
-				df[name] = [np.random.randint(2)for j in range(self.nb_lines)]
+			if mixed_data == 'm':
+				if i%2 == 0:
+					df[name] = [np.random.random()for j in range(self.nb_lines)]
+				
+				else:
+
+					if name == 'output' and output_type == 'c':
+						df[name] = [np.random.random()for j in range(self.nb_lines)]
+					
+					else:
+						df[name] = [np.random.randint(2)for j in range(self.nb_lines)]
+
+			elif mixed_data == 'c':
+				
+				if name == 'output' and output_type == 'b':
+					df[name] = [np.random.randint(2)for j in range(self.nb_lines)]
+				
+				else:
+					df[name] = [np.random.random() for j in range(self.nb_lines)]
+
+			elif mixed_data == 'b':
+				
+				if name == 'output' and output_type == 'c':
+					df[name] = [np.random.random()for j in range(self.nb_lines)]
+				
+				else:
+					df[name] = [np.random.randint(2) for j in range(self.nb_lines)]
+
 
 		df = pd.DataFrame.from_dict(df)
 		print(df)
 		return df 
 
-	def generate_file(self):
-		df = self.generate_data()
-		file_name = self.path +'\data_'+str(self.counter)+'.csv'
+	def generate_file(self,output_type = 'c',mixed_data = 'c'):
+		df = self.generate_data(output_type,mixed_data)
+		if output_type == 'c':
+			file_name = self.path +'\data_'+str(self.counter)+'_continuous_output.csv'
+		else:
+			file_name = self.path +'\data_'+str(self.counter)+'_binary_output.csv'
 		df.to_csv(file_name)
 		print(f'{dt.datetime.now()} csv file {file_name} created ')
 		self._update_counter()
@@ -62,5 +91,6 @@ class GeneratorManager(object):
 
 if __name__ == "__main__":
 	my_object = GeneratorManager(50,1000)
-	for i in range(5):
-		my_object.generate_file()
+	my_object.generate_file('b','c')
+	my_object.generate_file('c','c')
+	my_object.generate_file('m','b')
