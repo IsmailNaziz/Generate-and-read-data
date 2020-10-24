@@ -64,10 +64,25 @@ class GeneratorManager(object):
 
 	def generate_file(self,output_type = 'c',mixed_data = 'c'):
 		df = self.generate_data(output_type,mixed_data)
-		if output_type == 'c':
-			file_name = self.path +'\data_'+str(self.counter)+'_continuous_output.csv'
-		else:
-			file_name = self.path +'\data_'+str(self.counter)+'_binary_output.csv'
+
+		if output_type == 'c' and mixed_data == 'b':
+			file_name = self.path +'\data_'+str(self.counter)+'_IB_OC.csv'
+
+		elif output_type == 'c' and mixed_data == 'c':
+			file_name = self.path +'\data_'+str(self.counter)+'_IC_OC.csv'
+
+		elif output_type == 'c' and mixed_data == 'm':
+			file_name = self.path +'\data_'+str(self.counter)+'_IM_OC.csv'
+
+		elif output_type == 'b' and mixed_data == 'b':
+			file_name = self.path +'\data_'+str(self.counter)+'_IB_OB.csv'
+
+		elif output_type == 'b' and mixed_data == 'c':
+			file_name = self.path +'\data_'+str(self.counter)+'_IC_OB.csv'
+			
+		elif output_type == 'b' and mixed_data == 'm':
+			file_name = self.path +'\data_'+str(self.counter)+'_IM_OB.csv'
+
 		df.to_csv(file_name)
 		print(f'{dt.datetime.now()} csv file {file_name} created ')
 		self._update_counter()
@@ -91,6 +106,12 @@ class GeneratorManager(object):
 
 if __name__ == "__main__":
 	my_object = GeneratorManager(50,1000)
-	my_object.generate_file('b','c')
-	my_object.generate_file('c','c')
-	my_object.generate_file('m','b')
+	list_possibilities = [('b','c'),
+	('b','b'),
+	('c','c'),
+	('c','b'),
+	('m','c'),
+	('m','b')
+	]
+	for elem in list_possibilities:
+		my_object.generate_file(elem[1],elem[0])
